@@ -1,0 +1,138 @@
+---
+import { PortableText } from 'astro-portabletext';
+import CodeBlock from './CodeBlock.astro';
+import type {
+	SanityPageBuilderBlock,
+	SanityBlockHero,
+	SanityBlockSplitImage,
+	SanityBlockFeatures,
+	SanityBlockCTA,
+	SanityBlockRichText,
+} from '../types/sanity';
+
+interface Props {
+	blocks: SanityPageBuilderBlock[];
+}
+
+const { blocks } = Astro.props;
+
+const ptComponents = {
+	type: {
+		code: CodeBlock,
+	},
+};
+---
+
+{
+	blocks?.map((block) => {
+		switch (block._type) {
+			case 'hero': {
+				const b = block as SanityBlockHero;
+				return (
+					<section class="relative overflow-hidden py-24 md:py-32 px-4">
+						{b.image?.asset?.url && (
+							<img src={b.image.asset.url} alt={b.image?.alt || ''} class="absolute inset-0 w-full h-full object-cover" />
+						)}
+						<div class={`relative z-10 max-w-3xl mx-auto text-center ${b.image?.asset?.url ? 'text-white' : ''}`}>
+							{b.heading && <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">{b.heading}</h1>}
+							{b.tagline && <p class="text-lg md:text-xl mb-8 opacity-90">{b.tagline}</p>}
+							{b.cta?.label && b.cta?.href && (
+								<a href={b.cta.href} class="inline-block px-8 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors no-underline">
+									{b.cta.label}
+								</a>
+							)}
+						</div>
+					</section>
+				);
+			}
+
+			case 'splitImage': {
+				const b = block as SanityBlockSplitImage;
+				return (
+					<section class="py-16 md:py-24 px-4">
+						<div class={`max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center ${b.imagePosition === 'left' ? '' : 'md:direction-rtl'}`}>
+							<div class={b.imagePosition === 'left' ? 'order-1' : 'order-2'}>
+								{b.heading && <h2 class="text-3xl md:text-4xl font-bold mb-4">{b.heading}</h2>}
+								{b.body && (
+									<div class="prose prose-lg dark:prose-invert max-w-none">
+										<PortableText value={b.body} components={ptComponents} />
+									</div>
+								)}
+							</div>
+							<div class={b.imagePosition === 'left' ? 'order-2' : 'order-1'}>
+								{b.image?.asset?.url && (
+									<img
+										src={b.image.asset.url}
+										alt={b.image?.alt || ''}
+										class="w-full rounded-2xl shadow-lg object-cover"
+									/>
+								)}
+							</div>
+						</div>
+					</section>
+				);
+			}
+
+			case 'features': {
+				const b = block as SanityBlockFeatures;
+				return (
+					<section class="py-16 md:py-24 px-4 bg-gray-50 dark:bg-gray-900">
+						<div class="max-w-6xl mx-auto">
+							{b.heading && <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">{b.heading}</h2>}
+							<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+								{(b.items || []).map((item, i) => (
+									<div class="p-6 rounded-2xl bg-white dark:bg-gray-800 shadow-sm">
+										{item.icon && <div class="text-2xl mb-3">{item.icon}</div>}
+										{item.title && <h3 class="text-xl font-semibold mb-2">{item.title}</h3>}
+										{item.description && <p class="text-gray-600 dark:text-gray-400">{item.description}</p>}
+									</div>
+								))}
+							</div>
+						</div>
+					</section>
+				);
+			}
+
+			case 'cta': {
+				const b = block as SanityBlockCTA;
+				const bgClass =
+					b.variant === 'light' ? 'bg-gray-100 dark:bg-gray-800' :
+					b.variant === 'dark' ? 'bg-gray-900 dark:bg-black text-white' :
+					'bg-blue-600 text-white';
+				return (
+					<section class={`py-16 md:py-24 px-4 text-center ${bgClass}`}>
+						<div class="max-w-3xl mx-auto">
+							{b.heading && <h2 class="text-3xl md:text-4xl font-bold mb-4">{b.heading}</h2>}
+							{b.body && <p class="text-lg mb-8 opacity-90">{b.body}</p>}
+							{b.buttonLabel && b.buttonHref && (
+								<a href={b.buttonHref} class={`inline-block px-8 py-3 rounded-lg font-semibold transition-colors no-underline ${
+									b.variant === 'brand'
+										? 'bg-white text-blue-600 hover:bg-gray-100'
+										: b.variant === 'dark'
+											? 'bg-blue-600 text-white hover:bg-blue-700'
+											: 'bg-blue-600 text-white hover:bg-blue-700'
+								}`}>
+									{b.buttonLabel}
+								</a>
+							)}
+						</div>
+					</section>
+				);
+			}
+
+			case 'richText': {
+				const b = block as SanityBlockRichText;
+				return (
+					<section class="py-16 md:py-24 px-4">
+						<div class="max-w-3xl mx-auto prose prose-lg dark:prose-invert max-w-none">
+							{b.content && <PortableText value={b.content} components={ptComponents} />}
+						</div>
+					</section>
+				);
+			}
+
+			default:
+				return null;
+		}
+	})
+}

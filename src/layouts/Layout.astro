@@ -1,0 +1,33 @@
+---
+import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
+import BaseHead from '../components/BaseHead.astro';
+import DisableDraftMode from '../components/DisableDraftMode';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { VisualEditing } from '@sanity/astro/visual-editing';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: any;
+	canonical?: string;
+	type?: 'website' | 'article';
+}
+
+const { title, description, image, canonical, type } = Astro.props;
+const draftMode = Astro.cookies.has(perspectiveCookieName);
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead {title} {description} {image} {canonical} {type} />
+		<slot name="head" />
+	</head>
+	<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased">
+		<Header />
+		<slot />
+		<Footer />
+		<VisualEditing enabled={draftMode} />
+		{draftMode && <DisableDraftMode client:only="react" />}
+	</body>
+</html>

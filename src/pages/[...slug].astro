@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageBuilder from '../components/PageBuilder.astro';
+import { getDraftModeProps } from '../sanity/lib/draft-mode';
+import { loadQuery } from '../sanity/lib/load-query';
+import { PAGE_QUERY } from '../utils/sanity';
+import type { SanityPage } from '../types/sanity';
+
+const { slug } = Astro.params;
+if (!slug) {
+	return Astro.redirect('/404');
+}
+
+const { data: page } = await loadQuery<SanityPage>({
+	query: PAGE_QUERY,
+	params: { slug },
+	...getDraftModeProps(Astro.cookies),
+}).catch(() => ({ data: null }));
+
+if (!page) {
+	return Astro.redirect('/404');
+}
+---
+
+<Layout title={page.title} description={page.description || ''} image={page.ogImage}>
+	<PageBuilder blocks={page.pageBuilder} />
+</Layout>

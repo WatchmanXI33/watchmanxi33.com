@@ -1,0 +1,6 @@
+{
+	"path": "src/**/*.{ts,astro}",
+	"schema": "src/studio/schemaTypes/**/*.ts",
+	"output": "src/types/sanity.gen.ts",
+	"generates": ".sanity/types"
+}

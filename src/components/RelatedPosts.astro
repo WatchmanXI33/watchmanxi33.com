@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	current: CollectionEntry<'blog'>;
+}
+
+const { current } = Astro.props;
+const currentTags = current.data.tags ?? [];
+const currentCategories = current.data.categories ?? [];
+
+const allPosts = (await getCollection('blog'))
+	.filter((p) => p.id !== current.id && !p.data.draft);
+
+const related = allPosts
+	.map((p) => {
+		const tagOverlap = (p.data.tags ?? []).filter((t) => currentTags.includes(t)).length;
+		const catOverlap = (p.data.categories ?? []).filter((c) => currentCategories.includes(c)).length;
+		return { post: p, score: tagOverlap * 2 + catOverlap };
+	})
+	.sort((a, b) => b.score - a.score || b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf())
+	.slice(0, 3)
+	.filter((r) => r.score > 0);
+---
+
+{
+	related.length > 0 && (
+		<section class="border-t border-gray-200 dark:border-gray-800 pt-10">
+			<h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Related Posts</h2>
+			<div class="grid gap-6 md:grid-cols-3">
+				{related.map(({ post }) => (
+					<a href={`/blog/${post.id}/`} class="group no-underline">
+						<article class="p-5 rounded-xl bg-gray-50 dark:bg-gray-900 transition-colors group-hover:bg-gray-100 dark:group-hover:bg-gray-800">
+							<h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">{post.data.title}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">{post.data.description}</p>
+							<FormattedDate date={post.data.pubDate} />
+						</article>
+					</a>
+				))}
+			</div>
+		</section>
+	)
+}

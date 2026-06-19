@@ -1,7 +1,10 @@
 # build output
 dist/
+# test build artifacts
+dist-test/
 # generated types
 .astro/
+.sanity/
 
 # dependencies
 node_modules/
@@ -22,3 +25,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# migration artifacts
+migration/extracted/
+migration/transformed/
+migration/import.ndjson
+migration/reports/

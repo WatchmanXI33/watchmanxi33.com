@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Card from './Card.astro';
+
+interface Props {
+	post?: CollectionEntry<'blog'> | { id: string; data: Record<string, any> };
+}
+
+const { post: featuredPost } = Astro.props;
+
+let cardPost: CollectionEntry<'blog'> | { id: string; data: Record<string, any> } | undefined = featuredPost;
+
+if (!cardPost) {
+	const posts = (await getCollection('blog'))
+		.filter((p) => p.data.featured && !p.data.draft)
+		.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+	cardPost = posts[0];
+}
+---
+
+{
+	cardPost && (
+		<section class="mb-16">
+			<h2 class="sr-only">Featured Post</h2>
+			<Card post={cardPost} featured />
+		</section>
+	)
+}
