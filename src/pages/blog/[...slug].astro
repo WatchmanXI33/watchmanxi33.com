@@ -1,5 +1,6 @@
 ---
 import CodeBlock from '../../components/CodeBlock.astro';
+import GiscusComments from '../../components/GiscusComments.astro';
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { PortableText } from 'astro-portabletext';
@@ -162,6 +163,8 @@ if (sanityPost) {
 				<div class="mt-8 max-w-3xl mx-auto">
 					<AuthorBio />
 				</div>
+
+				<GiscusComments />
 
 				<div class="mt-8 max-w-3xl mx-auto">
 					<NewsletterSignup />

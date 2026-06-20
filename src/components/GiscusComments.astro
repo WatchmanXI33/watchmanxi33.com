@@ -1,0 +1,37 @@
+<div id="giscus-comments" class="mt-12 max-w-3xl mx-auto"></div>
+
+<script>
+	(function () {
+		const container = document.getElementById('giscus-comments');
+		if (!container) return;
+		const isDark = document.documentElement.classList.contains('dark');
+		const theme = isDark ? 'dark' : 'light';
+		const s = document.createElement('script');
+		s.src = 'https://giscus.app/client.js';
+		s.setAttribute('data-repo', 'watchmanxi33/watchmanxi33.com');
+		s.setAttribute('data-repo-id', 'R_kgDOS_wn2A');
+		s.setAttribute('data-category', 'General');
+		s.setAttribute('data-category-id', 'DIC_kwDOS_wn2M4C_ga8');
+		s.setAttribute('data-mapping', 'pathname');
+		s.setAttribute('data-strict', '0');
+		s.setAttribute('data-reactions-enabled', '1');
+		s.setAttribute('data-emit-metadata', '0');
+		s.setAttribute('data-input-position', 'bottom');
+		s.setAttribute('data-theme', theme);
+		s.setAttribute('data-lang', 'en');
+		s.setAttribute('crossorigin', 'anonymous');
+		s.async = true;
+		container.appendChild(s);
+		const observer = new MutationObserver(() => {
+			const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+			const iframe = document.querySelector('iframe.giscus-frame');
+			if (iframe) {
+				iframe.contentWindow?.postMessage(
+					{ giscus: { setConfig: { theme: current } } },
+					'https://giscus.app',
+				);
+			}
+		});
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+	})();
+</script>
